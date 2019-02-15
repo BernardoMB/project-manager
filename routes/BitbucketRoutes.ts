@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 
 const router = Router();
 
-export class GitLabRoutes {
+export class BitbucketRoutes {
     
     constructor () {}
 
@@ -13,7 +13,7 @@ export class GitLabRoutes {
 
     public testFunction = (request: Request, response: Response) => {
         try {
-            const message = 'Test Gitlab route works!';
+            const message = 'Test Bitbucket route works!';
             console.log(message);
                 response.status(200).json({message});
         } catch (error) {
