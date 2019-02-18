@@ -4,6 +4,7 @@ import { Middlewares } from './middlewares';
 import { Api } from './api';
 
 const cors = require('cors')
+const IP: string = "192.168.1.79";
 const PORT: number = 3000;
 const app: express.Application = express();
 
@@ -24,6 +25,6 @@ Api.initialize(app);
 // Run the app by serving the static files in the dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
-app.listen(PORT, '10.133.39.201', () => {
+app.listen(PORT, IP, () => {
     console.log(`Server is now running @ port: ${PORT}`)
 });

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "server": "ts-node ./server.ts",
+    "server-watch": "nodemon --ext \".ts\" --exec \"npm run server\" ",
     "start": "nodemon -2 \"./src/server\" --ext \".ts\" --exec \"npm run server\" ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
