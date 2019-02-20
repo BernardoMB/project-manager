@@ -4,8 +4,10 @@ import { Middlewares } from './middlewares';
 import { Api } from './api';
 
 const cors = require('cors')
+
 const IP: string = "192.168.1.79";
 const PORT: number = 3000;
+
 const app: express.Application = express();
 
 app.use(cors());

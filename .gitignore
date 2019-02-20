@@ -19,3 +19,6 @@ bower_components
 npm-debug.log
 testem.log
 /typings
+
+# secrets
+secrets.ts
