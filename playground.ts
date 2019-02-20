@@ -1,26 +1,31 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { username, password } from './secrets';
 const base64 = require('base-64');
 
-const createRepository = (repositoryName: string): void => {
-    const encodedCredentials = base64.encode(`${username}:${password}`);
-    axios({
-        method: 'post',
-        url: `https://api.bitbucket.org/2.0/repositories/kantostudio/${repositoryName}`,
-        data: {
-            'scm': 'git',
-            'is_private': 'true',
-            'fork_policy': 'no_public_forks' 
-        },
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Basic ${encodedCredentials}`
-        }
-      }).then((result) => {
-          console.log('Repository created!');
-      }, (error) => {
-          console.error(error);
-      });
-}
+const encodedCredentials = base64.encode(`${username}:${password}`);
 
-createRepository('proyectonsio2');
+const projectName = 'Projecto chido prueba 2';
+const projectKey = 'ChidoProbonsio2';
+const projectDescription = 'Projecto de prueba creado con la applicacion para pipelines.';
+const isPrivate = true;
+
+axios({
+    method: 'post',
+    url: `https://api.bitbucket.org/2.0/teams/kantostudio/projects/`,
+    data: {
+        'name': `${projectName}`,
+        'key': `${projectKey}`,
+        'description': `${projectDescription}`,
+        'is_private': isPrivate
+    },
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${encodedCredentials}`
+    }
+}).then((response: AxiosResponse) => {
+    const responseBody = response.data;
+    const message = `Porject ${responseBody.name} created!`;
+    console.log(responseBody);
+}, (error) => {
+    console.log(error.response.data.error);
+});
