@@ -1,9 +1,16 @@
 import { Request, Response } from 'express';
-import axios, { AxiosResponse, AxiosError } from "axios";
-import { username, password } from "./../secrets";
-import * as FormData from "form-data";
-import * as fs from "fs";
-const base64 = require("base-64");
+import axios, { AxiosResponse } from 'axios';
+import { username, password } from './../secrets';
+import * as FormData from 'form-data';
+import * as fs from 'fs';
+import * as base64 from 'base-64';
+import chalk from 'chalk';
+
+async function asyncForEach(array: Array<any>, callback: Function) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
 
 export class BitbuckerController {
 
@@ -21,7 +28,7 @@ export class BitbuckerController {
             const encodedCredentials: string = base64.encode(
                 `${username}:${password}`
             );
-            console.log('Encoded credentials', encodedCredentials);
+            //console.log('Encoded credentials', encodedCredentials);
             try {
                 // Create project
                 console.log('Creating project...');
@@ -42,7 +49,7 @@ export class BitbuckerController {
                 let responseBody = res.data;
                 projectName = responseBody.name;
                 let message = `Project ${projectName} created!`;
-                console.log(message);
+                console.log(chalk.greenBright(message));
                 projectKey = responseBody.key;
                 // Create repository
                 console.log('Creating repository...');
@@ -65,7 +72,7 @@ export class BitbuckerController {
                 const repo_slug = responseBody.slug;
                 const teamName = "kantostudio";
                 message = `Repository ${responseBody.name} created under ${projectName} project!`;
-                console.log(message);
+                console.log(chalk.greenBright(message));
                 /**
                  * TODO: Generate README.md file
                  */
@@ -89,8 +96,8 @@ export class BitbuckerController {
                     data: form
                 });
                 responseBody = res.data;
-                message = `Succesfully commited README.md file!`;
-                console.log(message);
+                message = `Commited README.md file!`;
+                console.log(chalk.greenBright(message));
                 // Get the just created commit data
                 console.log('Getting latest commit...');
                 res = await axios({
@@ -101,41 +108,39 @@ export class BitbuckerController {
                     }
                 });
                 let hash = res.data.values[0].hash;
-                console.log('Hash', hash);
-                // Create Development brac
-                console.log('Creating development branch...');
-                res = await axios({
-                    method: "post",
-                    url: `https://api.bitbucket.org/2.0/repositories/${teamName}/${repo_slug}/refs/branches`,
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Basic ${encodedCredentials}`
-                    },
-                    data: {
-                        name: "smf/Development",
-                        target: {
-                            hash: hash
+                console.log('Hash', chalk.yellowBright(hash));
+                let branches: Array<string> = [
+                    'Development',
+                    'Release',
+                    'Hotfixes',
+                    ...featureBranches
+                ];
+                await asyncForEach(branches, async (branch: string) => {
+                    console.log(`Creating ${branch} branch...`);
+                    res = await axios({
+                        method: "post",
+                        url: `https://api.bitbucket.org/2.0/repositories/${teamName}/${repo_slug}/refs/branches`,
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Basic ${encodedCredentials}`
+                        },
+                        data: {
+                            name: `${branch}`,
+                            target: {
+                                hash: hash
+                            }
                         }
-                    }
+                    });
+                    message = `${branch} branch created!`;
+                    console.log(chalk.greenBright(message));
                 });
-                console.log('Todo chido!');
-                // Create Realease brach
-                res = await axios({
-                    method: "post",
-                    url: `https://api.bitbucket.org/2.0/repositories/${teamName}/${repo_slug}/refs/branches`,
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Basic ${encodedCredentials}`
-                    },
-                    data: {
-                        name: "smf/Realease",
-                        target: {
-                            hash: hash
-                        }
-                    }
-                });
+                message = `\nCreated pipeline!`
+                console.log(chalk.cyanBright(message));
+                response.status(201).json({ message });
             } catch (error) {
                 console.log('Mamo el pedo');
+                console.error(error);
+                response.status(400).json({ error });
             }
         } catch (error) {
             console.log('Got bad request');
