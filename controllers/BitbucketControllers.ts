@@ -12,7 +12,7 @@ async function asyncForEach(array: Array<any>, callback: Function) {
     }
 }
 
-export class BitbuckerController {
+export class BitbucketController {
 
     public createPipeline = async (request: Request, response: Response) => {
         try {
@@ -70,20 +70,15 @@ export class BitbuckerController {
                 });
                 responseBody = res.data;
                 const repo_slug = responseBody.slug;
-                const teamName = "kantostudio";
+                const teamName = 'kantostudio';
                 message = `Repository ${responseBody.name} created under ${projectName} project!`;
                 console.log(chalk.greenBright(message));
                 /**
                  * TODO: Generate README.md file
                  */
                 let form: FormData = new FormData();
-                form.append(
-                    "README.md",
-                    fs.createReadStream(__dirname + "/../files/README.md"),
-                    {
-                        filename: "README.md"
-                    }
-                );
+                const readStream: fs.ReadStream = fs.createReadStream(__dirname + '/../files/README.md');
+                form.append('README.md', readStream, { filename: 'README.md' });
                 // Commit README.md file
                 console.log('Uploading readme files...');
                 res = await axios({
@@ -138,13 +133,13 @@ export class BitbuckerController {
                 console.log(chalk.cyanBright(message));
                 response.status(201).json({ message });
             } catch (error) {
-                console.log('Mamo el pedo');
-                console.error(error);
-                response.status(400).json({ error });
+                const bitBucketError = error.response.data.error;
+                console.log(chalk.redBright(bitBucketError));
+                response.status(400).json({ bitBucketError });
             }
         } catch (error) {
-            console.log('Got bad request');
-            console.error(error);
+            const message = 'Got bad request'
+            console.log(chalk.redBright(message, error));
             response.status(400).json({ error });
         }
     };

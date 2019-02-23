@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { BitbuckerController } from "../controllers/BitbucketControllers";
+import { BitbucketController } from "../controllers/BitbucketControllers";
 
 const router = Router();
 
 export class BitbucketRoutes {
 
-  private controller: BitbuckerController;
+  private controller: BitbucketController;
 
   constructor() {
-    this.controller = new BitbuckerController();
+    this.controller = new BitbucketController();
   }
 
   get routes(): Router {
