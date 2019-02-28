@@ -1,12 +1,10 @@
 import * as express from 'express';
 import * as path from 'path';
+import { IP, PORT } from './environment';
 import { Middlewares } from './middlewares';
 import { Api } from './api';
 
 const cors = require('cors')
-
-const IP: string = '10.133.38.139';
-const PORT: number = 3000;
 
 const app: express.Application = express();
 

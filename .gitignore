@@ -22,3 +22,6 @@ testem.log
 
 # secrets
 secrets.ts
+
+# environment
+environment.ts
